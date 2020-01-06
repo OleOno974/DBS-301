@@ -1,0 +1,116 @@
+-- ***********************
+-- Name: Olena Onopriyenko
+-- ID: 124605163
+-- Date: The current date
+-- Purpose: Lab 5 DBS301
+-- ***********************
+--Display the department name, city, street address and postal code for departments sorted by city and department name.
+ 
+
+SELECT department_name, city, street_address, postal_code 
+       FROM departments JOIN locations USING (location_id) 
+       ORDER BY city, department_name;
+
+--2.Display full name of employees as a single field using format of “Last, First”, their hire date, salary,
+--department name and city, but only for departments with names starting with an A or I sorted by department name and employee name. 
+
+SELECT last_name || ' '|| first_name  "EMPLOYEE", hire_date "Hired", salary, department_name "DEPARTMENT", city
+       FROM employees e JOIN departments d USING (department_id)
+       JOIN locations l USING (location_id)
+       WHERE d.department_name like 'A%' OR d.department_name like 'S%'
+       ORDER BY d.department_name, "EMPLOYEE";
+
+--3.Display the full name of the manager of each department in states/provinces of Ontario, New Jersey and Washington along with the department name,
+--city, postal code and province name.   Sort the output by city and then by department name.
+
+SELECT first_name || ' ' || last_name as "Manager", department_name, city, postal_code, state_province
+       FROM employees e JOIN departments d USING (manager_id) 
+       JOIN locations l USING (location_id)
+       WHERE LOWER(state_province)  IN ('ontario',  'california', 'washington')
+       ORDER BY city, department_name;
+
+--4.Display employee’s last name and employee number along with their manager’s last name and manager
+--number for employees in department 20,50, and 60. Label the columns Employee, Emp#, Manager, and Mgr# respectively.
+SELECT e.last_name "Employee", 
+       e.employee_id "Emp#", 
+       m.last_name "Manager", 
+       m.employee_id "Mgr#" 
+       FROM employees e JOIN employees m ON e.manager_id=m.employee_id; 
+ 
+--5.Display the department name, city, street address, postal code and country name for all Departments.
+--Use the JOIN and USING form of syntax.  Sort the output by department name descending.
+
+SELECT department_name "Department Name", 
+     city "City", 
+     street_address "Street Address", 
+     country_name "Country Name" 
+     FROM departments d LEFT JOIN locations l USING(location_id) 
+     LEFT JOIN countries USING(country_id) 
+     ORDER BY department_name DESC; 
+ 
+ --6.Display full name of the employees, their hire date and salary together with their department name,
+ --but only for departments which names start with A or I.
+--a.Full name should be formatted:  First / Last. 
+--b.Use the JOIN and ON form of syntax.
+--c.Sort the output by department name and then by last name.
+SELECT TRIM(first_name)||' / '||last_name "Full Name", 
+        hire_date "Hire Date", 
+        TO_CHAR(salary,'$9,999,999.99') "Salary", 
+        department_name "Dept Name" 
+   FROM employees e LEFT JOIN departments d ON e.department_id=d.department_id 
+   WHERE UPPER(department_name) LIKE 'A%' OR 
+   UPPER(department_name) LIKE 'S%'  
+   ORDER BY department_name, last_name; 
+ 
+ --7.Display full name of the manager of each department in provinces Ontario, 
+ --New Jersey and Washington plus department name, city, postal code and province name. 
+--a.Full name should be formatted: Last, First.  
+--b.Use the JOIN and ON form of syntax.
+--c.Sort the output by city and then by department name. 
+
+SELECT  
+     CASE  
+         WHEN d.manager_id IS NULL THEN '-' 
+         ELSE TRIM(last_name)||' '||first_name  
+     END "Manager Name",  
+     department_name "Dept Name", 
+     city "City", 
+     postal_code "Postal Code", 
+     state_province "State/Province" 
+     FROM departments d LEFT JOIN employees e ON d.manager_id=e.employee_id 
+     LEFT JOIN locations l ON d.location_id=l.location_id 
+     WHERE state_province IN ('Ontario','California','Washington') 
+     ORDER BY city, department_name;
+ 
+ --8.	Display the department name and Highest, Lowest and Average pay per each department.
+ --Name these results High, Low and Avg.
+--a.Use JOIN and ON form of the syntax.
+--b.Sort the output so that department with highest average salary are shown first.
+
+SELECT department_name "Dept Name", 
+     LPAD(NVL(TO_CHAR(MAX(salary),'$9,999,999.99'),'-'),14) "High", 
+     LPAD(NVL(TO_CHAR(MIN(salary),'$9,999,999.99'),'-'),14) "Low", 
+     LPAD(NVL(TO_CHAR(AVG(salary),'$9,999,999.99'),'-'),14) "Avg" 
+ FROM departments d LEFT JOIN employees e 
+     ON d.department_id=e.department_id 
+ GROUP BY department_name 
+ 
+ ORDER BY AVG(NVL(salary,0)) DESC; 
+
+--9.	Display the employee last name and employee number along with their manager’s last name and manager number. Label the columns Employee, 
+--a.	Emp#, Manager, and Mgr#, respectively. 
+--b.	Include also employees who do NOT have a manager and also employees who do NOT supervise anyone (or you could say managers without employees to supervise).
+
+SELECT NVL(e.last_name,'-') "Employee", 
+     NVL(TO_CHAR(e.employee_id),'-') "Emp#", 
+     NVL(m.last_name,'-') "Manager", 
+     NVL(TO_CHAR(m.employee_id),'-') "Mgr#" 
+ FROM employees e FULL OUTER JOIN employees m ON e.manager_id=m.employee_id; 
+
+
+
+
+ 
+
+
+
