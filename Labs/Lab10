@@ -1,0 +1,86 @@
+-- ***********************
+-- Name: Olena Onopriyenko
+-- ID: 124605163
+-- Date: 9/4/2019
+-- Purpose: Lab 10 DBS301
+-- ***********************
+
+--Q1.Create table L10Cities from table LOCATIONS, but only for location numbers less than 2000 
+
+CREATE TABLE L10Cities AS
+    SELECT * FROM LOCATIONS
+        WHERE location_id < 2000;
+        
+DESCRIBE L10Cities; 
+SELECT * FROM L10Cities;
+
+--Q2.Create table L10Towns from table LOCATIONS, but only for location numbers less than 1500 
+
+CREATE TABLE L10Towns  AS
+    SELECT * FROM LOCATIONS
+        WHERE location_id < 1500;
+SELECT * FROM L10Towns;
+ 
+--Q3 empty your RECYCLE BIN with one powerful command.
+
+SHOW RecycleBin;
+PURGE RecycleBin;
+DROP TABLE L10Towns;
+
+ --Q4 Restore table L10Towns from recycle bin and describe i
+t.
+Flashback TABLE L10Towns TO BEFORE DROP;
+SHOW RecycleBin;
+DESCRIBE L10Towns;
+SELECT * FROM L10Towns ;
+
+--Q5 Now remove table L10Towns so that does NOT remain in the recycle bin.  Explain what happened.
+
+DROP TABLE L10Towns;
+SHOW RecycleBin;
+PURGE RecycleBin;
+Flashback TABLE L10Towns TO BEFORE DROP
+
+--object not in RECYCLE BIN, Only the object in RecycleBin can be Flashback Dropped.
+
+
+--Q6 Create simple view called CAN_CITY_VU, based on table L10Cities  contain  columns Street_Address, Postal_Code, City and State_Province
+--for locations only in CANADA.
+
+CREATE VIEW can_city_vu AS  
+     (SELECT street_address, postal_code, city, state_province FROM L10Cities  
+         WHERE UPPER(country_id) = 'CA'); 
+SELECT * FROM can_city_vu;
+SELECT * FROM L10Cities;
+
+--Q7.Modify your view instead of original column names: Str_Adr, P_Code, City and Prov and also will include cities from ITALY.
+
+CREATE OR REPLACE VIEW can_city_vu AS
+   (SELECT street_address AS "Str_Adr", postal_code AS "P_Code", city AS "City", state_province AS "Prov"
+   FROM L10Cities  
+   WHERE country_id IN ('CA', 'IT'));
+SELECT * FROM can_city_vu;
+describe departments;
+
+--Q8. Create view  vwCity_DName_VU, based on tables LOCATIONS and DEPARTMENTS,
+--columns Department_Name, City and State_Province for locations in ITALY or CANADA.
+
+CREATE OR REPLACE VIEW vwCity_DName_VU AS
+    SELECT NVL(department_name, 'NA') "Department Name", city "City",state_province
+       FROM departments RIGHT JOIN locations USING (LOCATION_ID)
+       WHERE country_id IN ('CA', 'IT');
+SELECT * FROM vwCity_DName_VU;
+
+--Q9. Modify  viewDName, City and Prov and also will include all cities outside United States.
+ 
+CREATE OR REPLACE VIEW vwCity_DName_VU AS
+    SELECT NVL(department_name, 'NA') "DName", city "City",state_province "Prov"
+       FROM departments RIGHT JOIN locations USING (LOCATION_ID)
+       WHERE country_id  NOT IN ('US');
+SELECT * FROM vwCity_DName_VU;
+COMMIT;
+
+--Q11
+SELECT * FROM ALL_OBJECTS WHERE object_type = 'VIEW'; 
+SELECT * FROM ALL_OBJECTS WHERE object_type = 'VIEW' AND lower(object_name) = 'vwCity_DName_VU'; 
+DROP VIEW vwCity_DName_VU; 
