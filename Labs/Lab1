@@ -1,0 +1,62 @@
+-- ***********************
+-- Name: Olena Onopriyenko
+-- ID: 124605163
+-- Date: The current date
+-- Purpose: Lab 1 DBS301
+-- ***********************
+
+--•	Start by entering in the SQL Developer worksheet:
+--•	SELECT * FROM EMPLOYEES;
+--•	SELECT * FROM DEPARTMENTS;
+--•	SELECT * FROM JOB_HISTORY;
+--•	Which one of these tables appeared to be the widest? or longest? 
+
+SELECT *
+FROM employees
+
+-- 11 columns, 54 rows;
+
+SELECT *
+FROM departments;
+
+--4 columns, 8 rows;
+
+SELECT *
+FROM job_history;
+
+--5 colums 10 rows;
+
+--EMPLOYEES table appeared  the widest and longest. it contains 11 columns, 54 rows;
+
+--•	If the following SELECT statement does NOT execute successfully, how would you fix it?
+
+SELECT last_name “LName”, job_id “Job Title”, 
+       hire_date “Job Start”
+       FROM employees;
+
+SELECT last_name  "LName", job_id  "Job Title",
+       hire_date "Job Start"
+       FROM employees;
+
+--    corected the double quotes
+
+--•	There are THREE coding errors in this statement. Can you identify them?
+
+SELECT employee_id, last name, commission_pct Emp Comm,
+       FROM employees;
+--add underscote between last and name, as after commisin_pct  and include Emp Comm in double quotes
+
+SELECT employee_id, last_name, commission_pct as "Emp Comm"
+       FROM employees;
+
+•What command would show the structure of the LOCATIONS table?
+--Describe
+Describe locations;
+
+--Create a query to display the output shown below. 
+
+ SELECT location_id "City",city, city||' In The'||state_province as "Province with Country Code"
+ FROM locations;
+
+
+
