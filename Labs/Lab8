@@ -1,0 +1,138 @@
+-- ***********************
+-- Name: Olena Onopriyenko
+-- ID: 124605163
+-- Date: 7/15/2019
+-- Purpose: Lab 8 DBS301
+-- ***********************
+--Q1.Display the names of the employees whose salary is the same as the lowest salaried employee in any department.
+
+ SELECT first_name||' '||last_name AS "Name"
+     FROM employees e1 JOIN (SELECT MIN(salary) AS salary 
+                                    FROM employees) e2
+     ON    e1.salary = e2.salary 
+     ORDER BY  "Name" ;
+ 
+    --version 2.
+
+    WHERE salary = (SELECT MIN(salary) AS salary
+                           FROM employees)
+    ORDER BY 1; 
+
+
+    
+--Q2. Display the names of the employee(s) whose salary is the lowest in each department
+SELECT first_name||' '||last_name AS "Name"
+    FROM employees e1 JOIN (SELECT min(salary) AS salary, department_id 
+                                  FROM employees 
+                                  GROUP BY department_id) e2 
+       ON e1.salary = e2.salary AND e1.department_id = e2.department_id
+    ORDER BY 1;
+
+--Q3 3)	Give each of the employees with lowest salary a $120 bonus.
+
+SELECT first_name||' '||last_name AS "Name", e1.salary +120 AS salary
+    FROM employees e1 JOIN (SELECT min(salary) AS salary, department_id 
+                                 FROM employees 
+                                 GROUP BY department_id) e2 
+        ON e1.salary = e2.salary AND e1.department_id = e2.department_id
+    ORDER BY 1;
+
+--Q4.Create a view named vwAllEmps that consists of all employees includes employee_id, last_name,
+--salary, department_id, department_name, city and country 
+
+CREATE OR REPLACE VIEW vwAllEmps AS 
+     SELECT employee_id, last_name, salary, department_id, department_name, city, country_name 
+         FROM employees JOIN departments USING (department_id)
+         JOIN locations USING (location_id)
+         JOIN countries USING(country_id)
+
+--Q5: Use the ALLEMPS view to  
+-- a. display the emp id, lname, salary, and city for all emps.
+ 
+SELECT employee_id, last_name, salary, city 
+    FROM vwAllEmps; 
+      
+-- b. display total salary of all emps by city. 
+SELECT sum(salary) AS "Total Salary", city 
+    FROM vwAllEmps 
+    GROUP BY city; 
+      
+-- c. increase salary of lowest paid emp by dept by $100 
+
+UPDATE vwAllEmps 
+     SET salary = salary + 100 
+     WHERE salary IN (SELECT salary FROM (SELECT min(salary) AS salary, department_id 
+     FROM vwAllEmps GROUP BY department_id)) 
+     AND department_id IN (SELECT department_id FROM (SELECT min(salary) AS Salary, department_id 
+     FROM vwAllEmps GROUP BY department_id));
+
+--d.What happens if you try to insert an employee by providing values for all columns in this view?    
+INSERT INTO vwAllEmps 
+    VALUES (999, 'Onopriyenko', 50000, 60, 'IT', 'Toronto', 'Canada');
+ 
+--SQL Error: ORA-01776: cannot modify more than one base table through a join view.
+
+DESCRIBE vwAllEmps ;
+
+--e.Delete the employee named Vargas. Did it work? 
+
+DELETE FROM vwAllEmps
+    WHERE last_name = 'Vargas';
+
+-- YES, it works-- 1 row deleted.
+
+SELECT last_name
+    FROM vwAllEmps
+    WHERE last_name = 'Vargas';
+    
+--Q6)Create a view named vwAllDepts that consists of all departments and includes department_id, department_name, city and country.
+
+CREATE OR REPLACE VIEW vwAllDepts AS
+    SELECT department_id, department_name, city , country_name
+    FROM departments 
+    JOIN locations USING(location_id)
+    JOIN countries USING (country_id);
+
+--Q7.Use the vwAllDepts view to:
+--a.For all departments display the department_id, name and city
+
+SELECT department_id, department_name, city
+    FROM vwAllDepts;
+
+--b.For each city that has departments located in it display the number of departments by city.
+
+SELECT city, COUNT(department_id) 
+    FROM vwAllDepts 
+    GROUP BY city 
+    ORDER BY 1; 
+
+--Q8. Create a view called vwAllDeptSumm that consists of all departments and includes for each department:.
+
+CREATE OR REPLACE VIEW vwAllDeptSumm AS 
+     SELECT department_id, department_name, emp_total, salaried_emps, total_salary 
+     FROM departments JOIN 
+     (SELECT count(commission_pct) AS salaried_emps, sum(salary) AS total_salary, count(employee_id) AS emp_total, department_id 
+         FROM employees 
+         GROUP BY department_id) 
+     USING (department_id);
+ 
+--Q9 Display department name and number of employees for departments that have more than the average number of employees.
+ 
+SELECT department_name, emp_total
+    FROM vwAllDeptSumm
+    WHERE emp_total > (SELECT AVG( emp_total)FROM vwAllDeptSumm);
+
+--Q10 A) Use the GRANT statement to allow another student.
+ 
+GRANT SELECT ON employees TO dbs301_183g08;
+GRANT SELECT, INSERT, UPDATE ON departments TO dbs301_183g08;
+
+SELECT * FROM USER_TAB_PRIVS;
+
+-- B)Use REVOKE to remove INSERT and UPDATE permission from your depts table.
+ 
+ REVOKE INSERT, UPDATE ON departments FROM dbs301_183g08; 
+ 
+ SELECT * FROM USER_TAB_PRIVS; 
+
+
