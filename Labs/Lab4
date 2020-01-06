@@ -1,0 +1,69 @@
+-- ***********************
+-- Name: Olena Onopriyenko
+-- ID: 124605163
+-- Date: The current date
+-- Purpose: Lab 4 DBS301
+-- ***********************
+--•Display the difference between the Average pay and Lowest pay in the company.  Name this result Real Amount.
+--Format the output as currency with 2 decimal places.
+
+SELECT ROUND(AVG(salary)- MIN(salary))"Real Amound"
+       FROM employees
+
+--•Display the department number and Highest, Lowest and Average pay per each department.
+--Name these results High, Low and Avg. 
+--Sort the output so that the department with highest average salary is shown first.
+
+SELECT department_id, MAX(salary)"High", MIN(salary)"Low",ROUND(AVG(salary)) "Avg"
+       FROM employees
+       GROUP BY department_id
+       ORDER BY "Avg"
+
+--• Display how many people work the same job in the same department.
+--Name these results Dept#, Job and How Many. Include only jobs that involve more than one person. 
+--Sort the output so that jobs with the most people involved are shown first.
+
+SELECT department_id "Dept#", job_id "Job",
+       COUNT(employee_id)"How many"
+       FROM employees
+       GROUP BY department_id, job_id
+       HAVING COUNT(employee_id) > 1
+       ORDER BY 3
+
+--• For each job title display the job title and total amount paid each month for this type of the job.
+--Exclude titles AD_PRES and AD_VP and also include only jobs that require more than $11,000.
+--Sort the output so that top paid jobs are shown first.
+
+SELECT job_id "Job", SUM(salary)"Amound Paid"
+       FROM employees
+       GROUP BY job_id
+       HAVING job_id NOT IN('AD_PRES', 'AD_VP')
+       ORDER BY 2 DESC
+
+
+--• For each manager number display how many persons he / she supervises.
+--Exclude managers with numbers 100, 101 and 102 and also include only those managers that supervise more than 2 persons.
+--Sort the output so that manager numbers with the most supervised persons are shown first.
+
+SELECT manager_id  "Manager Number", 
+       COUNT(employee_id)  "Employees" 
+       FROM employees 
+       GROUP BY manager_id 
+       HAVING manager_id NOT IN(100, 101, 102) AND 
+       manager_id IS NOT NULL AND 
+       COUNT(employee_id) > 2 
+       ORDER BY 2 DESC; 
+ 
+ --• For each department show the latest and earliest hire date, BUT
+--exclude departments 10 and 20 
+-- exclude those departments where the last person was hired in this decade. (it is okay to hard code dates in this question only)
+-- Sort the output so that the most recent, meaning latest hire dates, are shown first.
+
+SELECT department_id "Dept#",
+       MIN (to_char(hire_date,'yy-mm-dd') )"Latest",
+       MAX(to_char(hire_date,'yy-mm-dd') ) "Earliest"
+       FROM employees 
+       GROUP BY department_id
+       HAVING department_id NOT IN(10, 20) AND 
+       MAX(hire_date) < '01-JAN-10' 
+       ORDER BY 2 DESC; 
