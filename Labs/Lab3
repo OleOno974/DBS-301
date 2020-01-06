@@ -1,0 +1,36 @@
+-- ***********************
+-- Name: Olena Onopriyenko
+-- ID: 124605163
+-- Date: '22 May 2019'
+-- Purpose: Lab 3 DBS301
+-- ***********************
+SELECT to_char(sysdate+1,'Month dd"th of year" yyyy')"Tomorrow"
+       FROM dual
+
+SELECT last_name, first_name,salary,((salary/100)*7+salary)"Good Salary",
+       ((((salary/100)*7+salary)-salary)*12)"Annual Pay Increase"
+        FROM employees
+        WHERE department_id in(20,50,60)
+
+SELECT  UPPER(last_name)||' '|| UPPER(first_name)||' is '|| UPPER (job_id) AS "Employees job"
+        FROM employees
+        WHERE last_name like '%s' and (first_name like 'C%' or first_name like 'K%')
+        ORDER BY last_name
+
+SELECT city, country_id, NVL(state_province, 'Unknown Province') AS "State/Province"
+       FROM locations
+       WHERE city LIKE 'S%' AND LENGTH(city) > 7;
+ 
+ SELECT last_name, hire_date, ROUND((SYSDATE- hire_date)/365) AS "Year Worked"
+        FROM employees
+        WHERE hire_date < to_date ('1997-01-01', 'YYYY-MM-DD')
+        ORDER BY "Year Worked"
+ 
+ SELECT last_name, hire_date,  
+        TO_CHAR(NEXT_DAY((HIRE_DATE+365), 'TUESDAY'), 'DAY, Month "the"  DdSpTh  "of year" YYYY') AS "REVIEW DAY" 
+        FROM employees
+        WHERE hire_date > '31-DEC-97' 
+        ORDER BY "REVIEW DAY"
+ 
+ 
+ 
