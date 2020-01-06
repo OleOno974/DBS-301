@@ -1,0 +1,52 @@
+***********************
+-- Name: Olena Onopriyenko
+-- ID: 124605163
+-- Date: '5 May 2019'
+-- Purpose: Lab 2 DBS301
+-- ***********************
+
+SELECT employee_id, last_name, salary 
+       FROM employees
+       WHERE salary BETWEEN 8000 and 10000
+       ORDER BY salary, last_name
+
+SELECT employee_id, last_name, salary, job_id 
+       FROM employees
+       WHERE (job_id = ' IT_Prog'
+       OR    job_id = 'SA_REP')
+       AND salary > 8000
+       AND salary < 11000
+       ORDER BY salary,last_name
+
+SELECT last_name, job_id, hire_date
+       FROM employees
+       WHERE  hire_date > '31 Dec 2016'
+       ORDER BY hire_date DESC
+
+SELECT last_name, job_id, salary, hire_date 
+      FROM employees
+      WHERE  hire_date < '1 Jan 2017'
+      AND salary > 12000
+      ORDER BY salary DESC
+
+SELECT job_id, first_name ||' '|| last_name  AS "Full_name"
+       FROM EMPLOYEES
+       WHERE  first_name  LIKE '%c%'
+       OR first_name  LIKE 'C%'
+
+SELECT last_name, salary, COMMISSION_PCT
+       FROM employees
+       WHERE salary  < 9000
+       AND commision_pct < 900
+
+SELECT last_name, salary, COMMISSION_PCT
+       FROM employees
+       WHERE salary  < 9000
+       AND commision_pct < 900
+       ORDER BY salary DESC
+
+SELECT last_name, salary, COMMISSION_PCT
+       FROM employees
+       WHERE salary  < 9000
+       AND commision_pct < 900
+       ORDER BY 2
