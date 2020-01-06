@@ -1,0 +1,85 @@
+-- ***********************
+-- Name: Olena Onopriyenko 
+-- ID: 124605163
+--
+
+-- Date: 8/8/2019
+-- Purpose: Assignement 2 Part3
+-- ***********************
+
+
+-- Views 
+--Table shows current situation of business Profit, Expenses and Revenue
+ CREATE OR REPLACE VIEW StateOfBusiness AS 
+     SELECT sell_price *0.025 AS "Profits", SUM("cost") + COUNT(referral_Id)*500 AS Expenses,
+            (sell_price*0.025) - (SUM("cost") + COUNT(referral_id)*500) AS Revenue 
+         FROM a2SoldProperty JOIN a2Advertisement
+         USING(property_id) 
+    GROUP BY sell_price *0.025, property_id;
+        
+SELECT * FROM StateOfBusiness;
+
+DESCRIBE  a2location;
+-- to show existing property for sale
+CREATE OR REPLACE VIEW PropertyForSale AS 
+     SELECT location_id, city, street, postal_code, property_id 
+         FROM a2location JOIN a2Property 
+         USING(location_id) 
+          
+         MINUS 
+          
+     SELECT location_id, city, street, postal_code, property_id  
+         FROM a2Soldproperty JOIN a2Property 
+         USING (property_id) 
+         JOIN a2location 
+         USING(location_id); 
+          
+SELECT * FROM PropertyForSale;
+
+DESCRIBE a2Clients;
+--To show client list  
+CREATE OR REPLACE VIEW ClientList AS 
+     SELECT client_id AS "Client ID", first_name AS "First Name", last_name AS "Last Name", phone_number AS "Phone" 
+     FROM a2Clients; 
+SELECT * FROM ClientList;
+COMMIT;
+
+-- To show Sales report by year
+
+CREATE OR REPLACE VIEW YearlySalesReport AS 
+     SELECT SUM(SELL_PRICE) AS "Monthly Sales", SUM("cost") + COUNT(referral_id)*500 AS "Monthly Expenses", (TO_CHAR(date_sold, 'DD/MM/YYYY')) AS "Date Sold" 
+         FROM a2Soldproperty JOIN a2Advertisement 
+         USING(property_Id) 
+         WHERE to_char(date_sold, 'yyyy') = &input 
+         GROUP BY  (TO_CHAR(date_sold, 'DD/MM/YYYY')); 
+         
+SELECT * FROM YearlySalesReport;
+
+SELECT * FROM CLIENTLIST;
+
+--Give the permisssions for group' student
+GRANT ALL ON a2Agency TO dbs301_192d19,dbs301_192d15,dbs301_192d23;
+GRANT ALL ON a2Area TO dbs301_192d19,dbs301_192d15,dbs301_192d23;
+GRANT ALL ON a2Outlet TO dbs301_192d19,dbs301_192d15,dbs301_192d23;
+GRANT ALL ON a2Clients TO dbs301_192d19,dbs301_192d15,dbs301_192d23;
+GRANT ALL ON a2Location TO dbs301_192d19,dbs301_192d15,dbs301_192d23;
+GRANT ALL ON a2Schools TO dbs301_192d19,dbs301_192d15,dbs301_192d23;
+GRANT ALL ON a2Property TO dbs301_192d19,dbs301_192d15,dbs301_192d23;
+GRANT ALL ON a2SoldProperty TO dbs301_192d19,dbs301_192d15,dbs301_192d23;
+GRANT ALL ON a2Advertisement TO dbs301_192d19,dbs301_192d15,dbs301_192d23;
+GRANT ALL ON a2Property_client TO dbs301_192d19,dbs301_192d15,dbs301_192d23;
+
+--Take out permissions  from publick
+REVOKE ALL ON a2Agency FROM PUBLIC;
+REVOKE ALL ON a2Area FROM PUBLIC;
+REVOKE ALL ON a2Outlet FROM PUBLIC;
+REVOKE ALL ON a2Clients FROM PUBLIC;
+REVOKE ALL ON a2Location FROM PUBLIC;
+REVOKE ALL ON a2Schools FROM PUBLIC;
+REVOKE ALL ON a2Property FROM PUBLIC;
+REVOKE ALL ON a2SoldProperty FROM PUBLIC;
+REVOKE ALL ON a2Advertisement FROM PUBLIC;
+REVOKE ALL ON a2Property_client FROM PUBLIC;
+
+
+COMMIT;
