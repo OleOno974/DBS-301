@@ -1,0 +1,121 @@
+-- ***********************
+-- Name: Olena Onopriyenko 
+-- ID: 124605163
+-- 
+-- Date: 8/8/2019
+-- Purpose: Assignement 2 Part1
+-- ***********************
+--Creation 
+
+--TABLE a2Agency
+ CREATE TABLE a2Agency( 
+     agency_ID INT PRIMARY KEY, 
+     "name" VARCHAR2(40), 
+     phone_number NUMBER 
+);
+
+--TABLE a2Area
+CREATE TABLE a2Area ( 
+     area_ID  INT PRIMARY KEY, 
+     area_name VARCHAR2(40),  
+     comments VARCHAR2(256) 
+); 
+
+--TABLE a2Outlet 
+CREATE TABLE a2Outlet ( 
+     outlet_ID INT PRIMARY KEY, 
+     outlet_name VARCHAR2(40), 
+     phone_number NUMBER 
+);
+
+CREATE TABLE a2Location( 
+     location_ID INT PRIMARY KEY, 
+     province VARCHAR2(40), 
+     city VARCHAR2(40), 
+     street VARCHAR2(40),
+     postal_code VARCHAR2(6) 
+);
+
+
+--TABLE a2Clients  
+CREATE TABLE a2Clients ( 
+     client_ID NUMBER PRIMARY KEY, 
+     first_name varchar2(25), 
+     last_name varchar2(25), 
+     phone_number int, 
+     e_mail varchar2(25) 
+);
+
+ALTER TABLE a2Clients
+    ADD CONSTRAINT a2ClentPhone_UC UNIQUE (phone_number);
+
+--TABLE a2Schools   
+CREATE TABLE a2Schools ( 
+     school_ID INT PRIMARY KEY, 
+     school_name VARCHAR2(40), 
+     school_type VARCHAR2(40), 
+     area_ID INT, 
+     CONSTRAINT AreaID_a2School_FK FOREIGN KEY(area_ID) REFERENCES a2Area(area_ID) 
+);   
+DESCRIBE a2Schools;
+
+--TABLE a2Property
+CREATE TABLE a2Property ( 
+     property_ID NUMBER PRIMARY KEY, 
+     agency_ID NUMBER, 
+     client_ID NUMBER, 
+     location_ID NUMBER, 
+     area_ID NUMBER, 
+     prop_type VARCHAR2(40), 
+     bedrooms NUMBER, 
+     bathrooms NUMBER, 
+     sq_footage NUMBER, 
+     lot_size NUMBER, 
+     maint_fee NUMBER, 
+     CONSTRAINT agency_ID_a2Property_FK FOREIGN KEY(agency_ID) REFERENCES a2Agency(agency_ID), 
+     CONSTRAINT client_ID_a2Property_FK FOREIGN KEY(client_ID) REFERENCES a2Clients(client_ID), 
+     CONSTRAINT location_ID_a2Property_FK FOREIGN KEY(location_ID) REFERENCES a2Location(location_ID), 
+     CONSTRAINT area_ID_a2Property_FK FOREIGN KEY(area_ID) REFERENCES a2Area(area_ID) 
+ );
+DESCRIBE a2Property;
+ 
+ --TABLE a2Advertisement
+CREATE TABLE a2Advertisement ( 
+     ad_ID INT PRIMARY KEY, 
+     outlet_ID INT, 
+     property_ID INT, 
+     "date" DATE, 
+     "cost" INT, 
+ CONSTRAINT outlet_ID_a2Advertisement_FK FOREIGN KEY(outlet_ID) REFERENCES a2Outlet(outlet_ID), 
+ CONSTRAINT property_ID_a2Advertisement_FK FOREIGN KEY(property_ID) REFERENCES a2Property(property_ID) 
+ ); 
+DESCRIBE a2Advertisement;
+DROP TABLE a2SoldProperty 
+--TABLE a2SoldProperty 
+CREATE TABLE a2SoldProperty( 
+     soldProperty_ID INT PRIMARY KEY, 
+     property_ID INT, 
+     agency_ID INT, 
+     date_sold DATE,
+     list_price NUMBER,
+     sell_price NUMBER, 
+     referral_ID INT, 
+     CONSTRAINT property_ID_a2SoldProperty_FK FOREIGN KEY(property_ID) REFERENCES a2Property(property_ID), 
+     CONSTRAINT agency_ID_a2SoldProperty_FK FOREIGN KEY(agency_ID) REFERENCES a2Agency(agency_ID), 
+     CONSTRAINT referral_ID_a2SoldProperty_FK FOREIGN KEY (referral_ID) REFERENCES a2Clients(client_ID) 
+     ); 
+ALTER TABLE a2SoldProperty
+    ADD CONSTRAINT reasonableYear_Ck CHECK ( TO_CHAR(date_sold,'YYYY')>= 2017);
+DESCRIBE a2SoldProperty;  
+
+--TABLE a2Property_Client
+Create TABLE a2Property_client(
+
+    property_ID INT,
+    client_ID INT,
+    CONSTRAINT property_a2PropClinet_FK FOREIGN KEY (property_ID) REFERENCES a2Property(property_ID),
+    CONSTRAINT client_a2PropClinet_FK FOREIGN KEY(client_ID) REFERENCES a2Clients(client_ID)
+    );
+DESCRIBE a2Property_Client;
+
+COMMIT;
